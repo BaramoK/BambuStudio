@@ -29,6 +29,47 @@ Other major features are:
 - Assembly & explosion view
 - Flushing transition-filament into infill/object during filament change
 
+# Install on NixOS or with Nix
+
+A flake packages the official Ubuntu 22.04 x86_64 AppImage for NixOS and other
+Linux distributions with the Nix package manager. It does not build Bambu Studio
+from source. The package is available for `x86_64-linux` only.
+
+Run it without installing:
+
+```sh
+nix run github:bambulab/BambuStudio
+```
+
+Install it in your user profile:
+
+```sh
+nix profile install github:bambulab/BambuStudio#bambu-studio
+```
+
+To add it to a NixOS flake configuration, add the repository as an input:
+
+```nix
+inputs.bambu-studio.url = "github:bambulab/BambuStudio";
+```
+
+Then include the package in the system package list. In your
+`nixpkgs.lib.nixosSystem` configuration, pass `inputs` to modules with
+`specialArgs = { inherit inputs; };`:
+
+```nix
+{ pkgs, inputs, ... }:
+{
+  environment.systemPackages = [
+    inputs.bambu-studio.packages.${pkgs.system}.default
+  ];
+}
+```
+
+Rebuild as usual with `sudo nixos-rebuild switch --flake .#your-host`. The
+flake follows the `nixos-unstable` Nixpkgs branch; its lock file pins the exact
+Nixpkgs revision. The AppImage version and SHA-256 are pinned in `flake.nix`.
+
 # How to compile
 Following platforms are currently supported to compile:
 - Windows 64-bit, [Compile Guide](https://github.com/bambulab/BambuStudio/wiki/Windows-Compile-Guide)
